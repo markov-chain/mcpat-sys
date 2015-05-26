@@ -1,6 +1,8 @@
-# mcpat-sys
+# mcpat-sys [![Build Status][status-img]][status-url]
 
 The package provides bindings to [McPAT][1].
+
+## [Documentation][doc]
 
 ## Contributing
 
@@ -9,3 +11,7 @@ The package provides bindings to [McPAT][1].
 3. Open a pull request.
 
 [1]: http://www.hpl.hp.com/research/mcpat
+
+[status-img]: https://travis-ci.org/stainless-steel/mcpat-sys.svg?branch=master
+[status-url]: https://travis-ci.org/stainless-steel/mcpat-sys
+[doc]: https://stainless-steel.github.io/mcpat-sys
