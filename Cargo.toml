@@ -1,0 +1,9 @@
+[package]
+name = "mcpat-sys"
+version = "0.0.1"
+authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/stainless-steel/mcpat-sys"
+homepage = "https://github.com/stainless-steel/mcpat-sys"
+documentation = "https://stainless-steel.github.io/mcpat-sys"
+description = "The package provides bindings to McPAT."
