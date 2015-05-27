@@ -1,15 +1,5 @@
-#[repr(C)]
-pub struct ParseXML;
+extern crate libc;
 
-extern "C" {
-    pub fn ParseXML_new() -> *mut ParseXML;
-    pub fn ParseXML_free(parsexml: *mut ParseXML);
-}
+mod xml_parse;
 
-#[cfg(test)]
-mod tests {
-    #[test]
-    fn link() {
-        unsafe { ::ParseXML_free(::ParseXML_new()) };
-    }
-}
+pub use xml_parse::*;

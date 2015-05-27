@@ -7,6 +7,7 @@ extern "C" {
 	typedef struct ParseXML_t;
 	ParseXML_t *ParseXML_new();
 	void ParseXML_free(ParseXML_t *);
+	void ParseXML_parse(ParseXML_t *, char *);
 }
 
 #endif

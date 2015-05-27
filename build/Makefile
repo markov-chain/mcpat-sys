@@ -13,8 +13,6 @@ objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
 flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=4 -I$(source) -I$(source)/cacti
 
-lib: $(output)/libmcpat.so
-
 $(output)/libmcpat.so: $(objects)
 	$(CXX) $(objects) -shared -o $@
 
@@ -26,5 +24,3 @@ $(output)/%.0: $(wrapper)/%.cc
 
 $(output)/cacti:
 	mkdir $@
-
-.PHONY: lib
