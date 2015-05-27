@@ -13,14 +13,15 @@ objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
 flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=4 -I$(source) -I$(source)/cacti
 
-$(output)/libmcpat.so: $(objects)
+$(output)/libmcpat.so: $(output)/.setup $(objects)
 	$(CXX) $(objects) -shared -o $@
 
-$(output)/%.o: $(source)/%.cc $(output)/cacti
+$(output)/%.o: $(source)/%.cc
 	$(CXX) $(flags) -c $< -o $@
 
 $(output)/%.0: $(wrapper)/%.cc
 	$(CXX) $(flags) -I$(build) -c $< -o $@
 
-$(output)/cacti:
-	mkdir $@
+$(output)/.setup:
+	mkdir $(output)/cacti
+	touch $@
