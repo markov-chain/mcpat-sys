@@ -4,8 +4,8 @@
 extern "C" {
 
 struct ParseXML_t;
-struct ParseXML_t *new_ParseXML();
-void delete_ParseXML(struct ParseXML_t *);
+ParseXML_t *new_ParseXML();
+void delete_ParseXML(ParseXML_t *);
 
 }
 

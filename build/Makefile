@@ -21,8 +21,8 @@ $(output)/libmcpat.so: $(objects)
 $(output)/%.o: $(source)/%.cc $(output)/cacti
 	$(CXX) $(flags) -c $< -o $@
 
-$(output)/%.0: $(wrapper)/%.cc $(output)/cacti
-	$(CXX) $(flags) -I$(build) -I$(wrapper) -c $< -o $@
+$(output)/%.0: $(wrapper)/%.cc
+	$(CXX) $(flags) -I$(build) -c $< -o $@
 
 $(output)/cacti:
 	mkdir $@
