@@ -19,6 +19,11 @@ fn main() {
         let parsexml = new_ParseXML();
         ParseXML_parse(parsexml, filename.as_ptr() as *mut _);
 
+        let system = &*ParseXML_sys(parsexml);
+        assert_eq!(system.number_of_cores, 2);
+        assert_eq!(system.L2[0].read_accesses, 200000.0);
+        assert_eq!(system.L2[0].write_accesses, 27276.0);
+
         let processor = new_Processor(parsexml);
 
         delete_Processor(processor);

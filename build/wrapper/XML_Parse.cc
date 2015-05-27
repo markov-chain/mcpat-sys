@@ -1,4 +1,3 @@
-#include <source/XML_Parse.h>
 #include <wrapper/XML_Parse.h>
 #include <wrapper/common.h>
 
@@ -12,4 +11,8 @@ void delete_ParseXML(ParseXML_t *parsexml) {
 
 void ParseXML_parse(ParseXML_t *parsexml, char *filename) {
 	TO(ParseXML, parsexml)->parse(filename);
+}
+
+root_system *ParseXML_sys(ParseXML_t *parsexml) {
+	return &TO(ParseXML, parsexml)->sys;
 }
