@@ -1,12 +1,10 @@
 #include <source/XML_Parse.h>
 #include <wrapper/XML_Parse.h>
 
-#define TO(type, pointer) (reinterpret_cast<type *>(pointer))
-
-ParseXML_t *new_ParseXML() {
-	return TO(ParseXML_t, new ParseXML());
+ParseXML_t *ParseXML_new() {
+	return INTO(new ParseXML(), ParseXML_t *);
 }
 
-void delete_ParseXML(ParseXML_t *parsexml) {
-	delete TO(ParseXML, parsexml);
+void ParseXML_free(ParseXML_t *parsexml) {
+	delete INTO(parsexml, ParseXML *);
 }
