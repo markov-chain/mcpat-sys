@@ -1,14 +1,15 @@
 #include <source/XML_Parse.h>
 #include <wrapper/XML_Parse.h>
+#include <wrapper/common.h>
 
-ParseXML_t *ParseXML_new() {
-	return INTO(new ParseXML(), ParseXML_t *);
+ParseXML_t *new_ParseXML() {
+	return TO(ParseXML_t, new ParseXML());
 }
 
-void ParseXML_free(ParseXML_t *self) {
-	delete INTO(self, ParseXML *);
+void delete_ParseXML(ParseXML_t *parsexml) {
+	delete TO(ParseXML, parsexml);
 }
 
-void ParseXML_parse(ParseXML_t *self, char *filename) {
-	INTO(self, ParseXML *)->parse(filename);
+void ParseXML_parse(ParseXML_t *parsexml, char *filename) {
+	TO(ParseXML, parsexml)->parse(filename);
 }
