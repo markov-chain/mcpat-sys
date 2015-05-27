@@ -7,3 +7,7 @@ repository = "https://github.com/stainless-steel/mcpat-sys"
 homepage = "https://github.com/stainless-steel/mcpat-sys"
 documentation = "https://stainless-steel.github.io/mcpat-sys"
 description = "The package provides bindings to McPAT."
+build = "build.rs"
+
+[dependencies]
+libc = "*"
