@@ -11,7 +11,8 @@ objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
 sources := $(wildcard $(wrapper)/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
-flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=4 -I$(source) -I$(source)/cacti
+NTHREADS ?= 4
+flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
 
 $(output)/libmcpat.so: $(output)/.setup $(objects)
 	$(CXX) $(objects) -shared -o $@
