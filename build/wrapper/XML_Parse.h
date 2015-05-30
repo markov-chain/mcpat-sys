@@ -1,5 +1,5 @@
-#ifndef __XML_PARSE_H__
-#define __XML_PARSE_H__
+#ifndef ____XML_PARSE_H____
+#define ____XML_PARSE_H____
 
 #include <source/XML_Parse.h>
 

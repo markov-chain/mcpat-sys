@@ -8,7 +8,7 @@ wrapper := $(build)/wrapper
 sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source)/cacti/*.cc))
 objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
 
-sources := $(wildcard $(wrapper)/*.cc)
+sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
 NTHREADS ?= 4
@@ -18,10 +18,10 @@ $(output)/libmcpat.so: $(output)/.setup $(objects)
 	$(CXX) $(objects) -shared -o $@
 
 $(output)/%.o: $(source)/%.cc
-	$(CXX) $(flags) -c $< -o $@
+	$(CXX) $(flags) $< -c -o $@
 
 $(output)/%.0: $(wrapper)/%.cc
-	$(CXX) $(flags) -I$(build) -c $< -o $@
+	$(CXX) $(flags) $< -I$(build) -c -o $@
 
 $(output)/.setup:
 	mkdir $(output)/cacti

@@ -5,14 +5,14 @@ ParseXML_t *new_ParseXML() {
 	return TO(ParseXML_t, new ParseXML());
 }
 
-void delete_ParseXML(ParseXML_t *parsexml) {
-	delete TO(ParseXML, parsexml);
+void delete_ParseXML(ParseXML_t *self) {
+	delete TO(ParseXML, self);
 }
 
-void ParseXML_parse(ParseXML_t *parsexml, char *filename) {
-	TO(ParseXML, parsexml)->parse(filename);
+void ParseXML_parse(ParseXML_t *self, char *filename) {
+	TO(ParseXML, self)->parse(filename);
 }
 
-root_system *ParseXML_sys(ParseXML_t *parsexml) {
-	return &TO(ParseXML, parsexml)->sys;
+root_system *ParseXML_sys(ParseXML_t *self) {
+	return &TO(ParseXML, self)->sys;
 }

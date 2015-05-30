@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 extern crate mcpat_sys;
 
 use mcpat_sys::*;
@@ -19,14 +21,32 @@ fn main() {
         let parsexml = new_ParseXML();
         ParseXML_parse(parsexml, filename.as_ptr() as *mut _);
 
-        let system = &*ParseXML_sys(parsexml);
-        assert_eq!(system.number_of_cores, 2);
-        assert_eq!(system.L2[0].read_accesses, 200000.0);
-        assert_eq!(system.L2[0].write_accesses, 27276.0);
-
         let processor = new_Processor(parsexml);
+        display_energy(parsexml, processor);
 
         delete_Processor(processor);
         delete_ParseXML(parsexml);
     }
+}
+
+unsafe fn display_energy(parsexml: *mut ParseXML, processor: *mut Processor) {
+    let system = &*ParseXML_sys(parsexml);
+
+    let long_channel = system.longer_channel_device != 0;
+    let power_gating = system.power_gating != 0;
+
+    let power = Processor_power(processor);
+    let readOp = powerDef_readOp(power);
+
+    let (dynamic, longer_channel_leakage, leakage, gate_leakage) = (
+        powerComponents_dynamic(readOp),
+        powerComponents_longer_channel_leakage(readOp),
+        powerComponents_leakage(readOp),
+        powerComponents_gate_leakage(readOp),
+    );
+
+    assert_eq!(dynamic, 9.810634623075116e+01);
+    assert_eq!(134.938, dynamic +
+                        if long_channel { longer_channel_leakage } else { leakage } +
+                        gate_leakage);
 }

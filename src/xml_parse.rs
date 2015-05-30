@@ -7,9 +7,9 @@ pub struct ParseXML;
 
 extern "C" {
     pub fn new_ParseXML() -> *mut ParseXML;
-    pub fn delete_ParseXML(parsexml: *mut ParseXML);
-    pub fn ParseXML_parse(parsexml: *mut ParseXML, filename: *mut c_char);
-    pub fn ParseXML_sys(parsexml: *mut ParseXML) -> *mut root_system;
+    pub fn delete_ParseXML(this: *mut ParseXML);
+    pub fn ParseXML_parse(this: *mut ParseXML, filename: *mut c_char);
+    pub fn ParseXML_sys(this: *mut ParseXML) -> *mut root_system;
 }
 
 #[derive(Clone, Copy, Debug)]
