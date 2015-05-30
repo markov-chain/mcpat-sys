@@ -12,12 +12,21 @@ macro_rules! to_c_str(
     ($string:expr) => (ok!(::std::ffi::CString::new($string)));
 );
 
+macro_rules! round(
+    ($value:expr, $precision:expr) => ({
+        let scale = 10f64.powi($precision);
+        ($value * scale).round() / scale
+    });
+);
+
 // https://github.com/copies/mcpat/blob/master/main.cc
 #[test]
 fn main() {
     let filename = to_c_str!("build/source/ProcessorDescriptionFiles/Xeon.xml");
 
     unsafe {
+        set_opt_for_clk(1);
+
         let parsexml = new_ParseXML();
         ParseXML_parse(parsexml, filename.as_ptr() as *mut _);
 
@@ -33,7 +42,6 @@ unsafe fn display_energy(parsexml: *mut ParseXML, processor: *mut Processor) {
     let system = &*ParseXML_sys(parsexml);
 
     let long_channel = system.longer_channel_device != 0;
-    let power_gating = system.power_gating != 0;
 
     let power = Processor_power(processor);
     let readOp = powerDef_readOp(power);
@@ -45,8 +53,11 @@ unsafe fn display_energy(parsexml: *mut ParseXML, processor: *mut Processor) {
         powerComponents_gate_leakage(readOp),
     );
 
-    assert_eq!(dynamic, 9.810634623075116e+01);
-    assert_eq!(134.938, dynamic +
-                        if long_channel { longer_channel_leakage } else { leakage } +
-                        gate_leakage);
+    let peak_power = dynamic + if long_channel {
+                                   longer_channel_leakage
+                               } else {
+                                   leakage
+                               } + gate_leakage;
+
+    assert_eq!(round!(peak_power, 3), 134.938);
 }
