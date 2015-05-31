@@ -33,14 +33,14 @@ fn main() {
         ParseXML_parse(parsexml, filename.as_ptr() as *mut _);
 
         let processor = new_Processor(parsexml);
-        display_energy(parsexml, processor);
+        Processor_displayEnergy(processor, parsexml);
 
         delete_Processor(processor);
         delete_ParseXML(parsexml);
     }
 }
 
-unsafe fn display_energy(parsexml: *mut ParseXML, processor: *mut Processor) {
+unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut ParseXML) {
     let system = &*ParseXML_sys(parsexml);
 
     let long_channel = system.longer_channel_device != 0;
