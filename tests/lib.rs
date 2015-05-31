@@ -20,6 +20,8 @@ macro_rules! round(
 );
 
 // https://github.com/copies/mcpat/blob/master/main.cc
+// https://github.com/copies/mcpat/blob/master/ProcessorDescriptionFiles/Xeon.xml
+// https://github.com/copies/mcpat/blob/master/ExampleResults/Xeon
 #[test]
 fn main() {
     let filename = to_c_str!("build/source/ProcessorDescriptionFiles/Xeon.xml");
