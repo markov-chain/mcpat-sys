@@ -14,7 +14,6 @@ void delete_Processor(Processor_t *self) {
 }
 
 Core_t *Processor_cores(Processor_t *self, int i) {
-	TO(Processor, self)->cores[i]->displayEnergy(0, 10, true);
 	return TO(Core_t, TO(Processor, self)->cores[i]);
 }
 

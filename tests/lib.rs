@@ -67,6 +67,13 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let numCore = Processor_numCore(processor);
     assert_eq!(numCore, 1);
+
+    let numL2 = Processor_numL2(processor);
+    assert_eq!(numL2, 1);
+
+    let numL3 = Processor_numL3(processor);
+    assert_eq!(numL3, 1);
+
     let core = Processor_cores(processor, 0);
 
     let clockRate = Core_clockRate(core);
@@ -82,11 +89,21 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
         "Runtime Dynamic" => CompareWithProcessed(55.7891, Box::new(move|v| v / executionTime)),
     ));
 
-    let numL2 = Processor_numL2(processor);
-    assert_eq!(numL2, 1);
+    assert!(system.Private_L2 > 0);
+    let l2cache = Core_l2cache(core);
 
-    let numL3 = Processor_numL3(processor);
-    assert_eq!(numL3, 1);
+    let clockRate = CacheDynParam_clockRate(SharedCache_cachep(l2cache));
+    check(system, powerDef_readOp(SharedCache_power(l2cache)), hash_map!(
+        "Peak Dynamic" => CompareWithProcessed(3.16559, Box::new(move|v| v * clockRate)),
+        "Subthreshold Leakage" => CompareWith(2.73387),
+        "Subthreshold Leakage with power gating" => CompareWith(1.3859),
+        "Gate Leakage" => CompareWith(0.0221925),
+    ));
+
+    let executionTime = CacheDynParam_executionTime(SharedCache_cachep(l2cache));
+    check(system, powerDef_readOp(SharedCache_rt_power(l2cache)), hash_map!(
+        "Runtime Dynamic" => CompareWithProcessed(7.23071, Box::new(move|v| v / executionTime)),
+    ));
 }
 
 unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, Action>) {
