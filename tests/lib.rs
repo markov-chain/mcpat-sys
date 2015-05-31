@@ -104,6 +104,19 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     check(system, powerDef_readOp(SharedCache_rt_power(l2cache)), hash_map!(
         "Runtime Dynamic" => CompareWithProcessed(7.23071, Box::new(move|v| v / executionTime)),
     ));
+
+    let l3 = Processor_l3(processor);
+
+    check(system, powerDef_readOp(Component_power(l3)), hash_map!(
+        "Peak Dynamic" => CompareWith(6.70159),
+        "Subthreshold Leakage" => CompareWith(10.9824),
+        "Subthreshold Leakage with power gating" => CompareWith(6.06659),
+        "Gate Leakage" => CompareWith(0.165767),
+    ));
+
+    check(system, powerDef_readOp(Component_rt_power(l3)), hash_map!(
+        "Runtime Dynamic" => CompareWith(4.32382),
+    ));
 }
 
 unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, Action>) {

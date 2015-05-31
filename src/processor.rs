@@ -1,6 +1,7 @@
 use libc::c_int;
 
 use cacti::cacti_interface::powerDef;
+use cacti::component::Component;
 use core::Core;
 use xml_parse::ParseXML;
 
@@ -14,6 +15,7 @@ extern "C" {
     pub fn Processor_cores(this: *mut Processor, i: c_int) -> *mut Core;
     pub fn Processor_power(this: *mut Processor) -> *mut powerDef;
     pub fn Processor_rt_power(this: *mut Processor) -> *mut powerDef;
+    pub fn Processor_l3(this: *mut Processor) -> *mut Component;
     pub fn Processor_numCore(this: *mut Processor) -> c_int;
     pub fn Processor_numL2(this: *mut Processor) -> c_int;
     pub fn Processor_numL3(this: *mut Processor) -> c_int;

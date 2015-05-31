@@ -1,6 +1,7 @@
 #include <source/XML_Parse.h>
 #include <source/processor.h>
 #include <wrapper/cacti/cacti_interface.h>
+#include <wrapper/cacti/component.h>
 #include <wrapper/common.h>
 #include <wrapper/core.h>
 #include <wrapper/processor.h>
@@ -23,6 +24,10 @@ powerDef_t *Processor_power(Processor_t *self) {
 
 powerDef_t *Processor_rt_power(Processor_t *self) {
 	return TO(powerDef_t, &TO(Processor, self)->rt_power);
+}
+
+Component_t *Processor_l3(Processor_t *self) {
+	return TO(Component_t, &TO(Processor, self)->l3);
 }
 
 int Processor_numCore(Processor_t *self) {

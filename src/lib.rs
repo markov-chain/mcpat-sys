@@ -13,6 +13,7 @@ mod xml_parse;
 
 pub use basic_components::*;
 pub use cacti::cacti_interface::*;
+pub use cacti::component::*;
 pub use core::*;
 pub use processor::*;
 pub use sharedcache::*;
