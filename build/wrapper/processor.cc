@@ -15,3 +15,7 @@ void delete_Processor(Processor_t *self) {
 powerDef_t *Processor_power(Processor_t *self) {
 	return TO(powerDef_t, &TO(Processor, self)->power);
 }
+
+powerDef_t *Processor_rt_power(Processor_t *self) {
+	return TO(powerDef_t, &TO(Processor, self)->rt_power);
+}

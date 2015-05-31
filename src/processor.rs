@@ -9,4 +9,5 @@ extern "C" {
     pub fn new_Processor(parsexml: *mut ParseXML) -> *mut Processor;
     pub fn delete_Processor(this: *mut Processor);
     pub fn Processor_power(this: *mut Processor) -> *mut powerDef;
+    pub fn Processor_rt_power(this: *mut Processor) -> *mut powerDef;
 }

@@ -74,4 +74,11 @@ unsafe fn display_energy(parsexml: *mut ParseXML, processor: *mut Processor) {
         assert_eq!(round!(subthreshold_leakage_with_power_gating, 4), 16.3977);
     }
     assert_eq!(round!(gate_leakage, 5), 1.66871);
+
+    let power_rt = Processor_rt_power(processor);
+    let readOp = powerDef_readOp(power_rt);
+
+    let runtime_dynamic = powerComponents_dynamic(readOp);
+
+    assert_eq!(round!(runtime_dynamic, 4), 72.9199);
 }

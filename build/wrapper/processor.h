@@ -9,6 +9,7 @@ extern "C" {
 	Processor_t *new_Processor(ParseXML_t *XML_interface);
 	void delete_Processor(Processor_t *);
 	powerDef_t *Processor_power(Processor_t *);
+	powerDef_t *Processor_rt_power(Processor_t *);
 }
 
 #endif
