@@ -57,6 +57,15 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     check(system, powerDef_readOp(Processor_rt_power(processor)), hash_map!(
         "Runtime Dynamic" => 72.9199,
     ));
+
+    let numCore = Processor_numCore(processor);
+    assert_eq!(numCore, 1);
+
+    let numL2 = Processor_numL2(processor);
+    assert_eq!(numL2, 1);
+
+    let numL3 = Processor_numL3(processor);
+    assert_eq!(numL3, 1);
 }
 
 unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, f64>) {

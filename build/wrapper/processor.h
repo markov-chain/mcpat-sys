@@ -10,6 +10,12 @@ extern "C" {
 	void delete_Processor(Processor_t *);
 	powerDef_t *Processor_power(Processor_t *);
 	powerDef_t *Processor_rt_power(Processor_t *);
+	int Processor_numCore(Processor_t *);
+	int Processor_numL2(Processor_t *);
+	int Processor_numL3(Processor_t *);
+	int Processor_numNOC(Processor_t *);
+	int Processor_numL1Dir(Processor_t *);
+	int Processor_numL2Dir(Processor_t *);
 }
 
 #endif
