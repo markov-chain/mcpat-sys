@@ -78,7 +78,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let clockRate = Core_clockRate(core);
     check(system, powerDef_readOp(Core_power(core)), hash_map!(
-        "Peak Dynamic" => CompareWithProcessed(39.2989, Box::new(move|v| v * clockRate)),
+        "Peak Dynamic" => CompareWithProcessed(39.2989, Box::new(move |v| v * clockRate)),
         "Subthreshold Leakage" => CompareWith(12.0565),
         "Subthreshold Leakage with power gating" => CompareWith(5.15028),
         "Gate Leakage" => CompareWith(0.74513),
@@ -86,7 +86,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let executionTime = Core_executionTime(core);
     check(system, powerDef_readOp(Core_rt_power(core)), hash_map!(
-        "Runtime Dynamic" => CompareWithProcessed(55.7891, Box::new(move|v| v / executionTime)),
+        "Runtime Dynamic" => CompareWithProcessed(55.7891, Box::new(move |v| v / executionTime)),
     ));
 
     assert!(system.Private_L2 > 0);
@@ -94,7 +94,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let clockRate = CacheDynParam_clockRate(SharedCache_cachep(l2cache));
     check(system, powerDef_readOp(SharedCache_power(l2cache)), hash_map!(
-        "Peak Dynamic" => CompareWithProcessed(3.16559, Box::new(move|v| v * clockRate)),
+        "Peak Dynamic" => CompareWithProcessed(3.16559, Box::new(move |v| v * clockRate)),
         "Subthreshold Leakage" => CompareWith(2.73387),
         "Subthreshold Leakage with power gating" => CompareWith(1.3859),
         "Gate Leakage" => CompareWith(0.0221925),
@@ -102,7 +102,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let executionTime = CacheDynParam_executionTime(SharedCache_cachep(l2cache));
     check(system, powerDef_readOp(SharedCache_rt_power(l2cache)), hash_map!(
-        "Runtime Dynamic" => CompareWithProcessed(7.23071, Box::new(move|v| v / executionTime)),
+        "Runtime Dynamic" => CompareWithProcessed(7.23071, Box::new(move |v| v / executionTime)),
     ));
 
     let l3 = Processor_l3(processor);
