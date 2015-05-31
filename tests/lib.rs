@@ -5,6 +5,13 @@ extern crate mcpat_sys;
 use mcpat_sys::*;
 use std::collections::HashMap;
 
+enum Action {
+    CompareWith(f64),
+    CompareWithProcessed(f64, Box<ProcessFn>),
+}
+
+type ProcessFn = Fn(f64) -> f64;
+
 macro_rules! ok(
     ($result:expr) => ($result.unwrap());
 );
@@ -43,23 +50,39 @@ fn main() {
 }
 
 unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut ParseXML) {
+    use Action::*;
+
     let system = &*ParseXML_sys(parsexml);
 
     check(system, powerDef_readOp(Processor_power(processor)), hash_map!(
-        "Peak Power" => 134.938,
-        "Total Leakage" => 36.8319,
-        "Peak Dynamic" => 98.1063,
-        "Subthreshold Leakage" => 35.1632,
-        "Subthreshold Leakage with power gating" => 16.3977,
-        "Gate Leakage" => 1.66871,
+        "Peak Power" => CompareWith(134.938),
+        "Total Leakage" => CompareWith(36.8319),
+        "Peak Dynamic" => CompareWith(98.1063),
+        "Subthreshold Leakage" => CompareWith(35.1632),
+        "Subthreshold Leakage with power gating" => CompareWith(16.3977),
+        "Gate Leakage" => CompareWith(1.66871),
     ));
 
     check(system, powerDef_readOp(Processor_rt_power(processor)), hash_map!(
-        "Runtime Dynamic" => 72.9199,
+        "Runtime Dynamic" => CompareWith(72.9199),
     ));
 
     let numCore = Processor_numCore(processor);
     assert_eq!(numCore, 1);
+    let core = Processor_cores(processor, 0);
+
+    let clockRate = Core_clockRate(core);
+    check(system, powerDef_readOp(Core_power(core)), hash_map!(
+        "Peak Dynamic" => CompareWithProcessed(39.2989, Box::new(move|v| v * clockRate)),
+        "Subthreshold Leakage" => CompareWith(12.0565),
+        "Subthreshold Leakage with power gating" => CompareWith(5.15028),
+        "Gate Leakage" => CompareWith(0.74513),
+    ));
+
+    let executionTime = Core_executionTime(core);
+    check(system, powerDef_readOp(Core_rt_power(core)), hash_map!(
+        "Runtime Dynamic" => CompareWithProcessed(55.7891, Box::new(move|v| v / executionTime)),
+    ));
 
     let numL2 = Processor_numL2(processor);
     assert_eq!(numL2, 1);
@@ -68,7 +91,9 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     assert_eq!(numL3, 1);
 }
 
-unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, f64>) {
+unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, Action>) {
+    use Action::*;
+
     let long_channel = system.longer_channel_device != 0;
     let power_gating = system.power_gating != 0;
 
@@ -81,44 +106,33 @@ unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap
 
     let subthreshold_leakage = if long_channel { longer_channel_leakage } else { leakage };
     let total_leakage = subthreshold_leakage + gate_leakage;
-    let subthreshold_leakage_with_power_gating = if long_channel {
-                                                     power_gated_with_long_channel_leakage
-                                                 } else {
-                                                     power_gated_leakage
-                                                 };
 
-    for (key, value) in map {
-        match key {
-            "Peak Power" => {
-                equal(value, dynamic + total_leakage);
-            },
-            "Total Leakage" => {
-                equal(value, total_leakage);
-            },
-            "Peak Dynamic" => {
-                equal(value, dynamic);
-            },
-            "Subthreshold Leakage" => {
-                equal(value, subthreshold_leakage);
-            },
+    for (key, action) in map {
+        let actual = match key {
+            "Peak Power" => dynamic + total_leakage,
+            "Total Leakage" => total_leakage,
+            "Peak Dynamic" => dynamic,
+            "Subthreshold Leakage" => subthreshold_leakage,
             "Subthreshold Leakage with power gating" => {
                 assert!(power_gating);
-                equal(value, subthreshold_leakage_with_power_gating);
+                if long_channel {
+                    power_gated_with_long_channel_leakage
+                } else {
+                    power_gated_leakage
+                }
             },
-            "Gate Leakage" => {
-                equal(value, gate_leakage);
-            },
-            "Runtime Dynamic" => {
-                equal(value, dynamic);
-            },
-            _ => {
-                assert!(false);
-            },
+            "Gate Leakage" => gate_leakage,
+            "Runtime Dynamic" => dynamic,
+            _ => panic!("encountered an unknown quantity"),
+        };
+        match action {
+            CompareWith(expected) => equal(actual, expected),
+            CompareWithProcessed(expected, process) => equal(process(actual), expected),
         }
     }
 }
 
-fn equal(expected: f64, actual: f64) {
+fn equal(actual: f64, expected: f64) {
     let (mut precision, mut scale) = (1i32, 1f64);
     loop {
         if (expected * scale).round() / scale == expected {

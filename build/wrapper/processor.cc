@@ -2,6 +2,7 @@
 #include <source/processor.h>
 #include <wrapper/cacti/cacti_interface.h>
 #include <wrapper/common.h>
+#include <wrapper/core.h>
 #include <wrapper/processor.h>
 
 Processor_t *new_Processor(ParseXML_t *XML_interface) {
@@ -10,6 +11,11 @@ Processor_t *new_Processor(ParseXML_t *XML_interface) {
 
 void delete_Processor(Processor_t *self) {
 	delete TO(Processor, self);
+}
+
+Core_t *Processor_cores(Processor_t *self, int i) {
+	TO(Processor, self)->cores[i]->displayEnergy(0, 10, true);
+	return TO(Core_t, TO(Processor, self)->cores[i]);
 }
 
 powerDef_t *Processor_power(Processor_t *self) {

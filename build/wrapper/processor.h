@@ -8,6 +8,7 @@ extern "C" {
 	typedef struct Processor_t;
 	Processor_t *new_Processor(ParseXML_t *XML_interface);
 	void delete_Processor(Processor_t *);
+	Core_t *Processor_cores(Processor_t *, int);
 	powerDef_t *Processor_power(Processor_t *);
 	powerDef_t *Processor_rt_power(Processor_t *);
 	int Processor_numCore(Processor_t *);
