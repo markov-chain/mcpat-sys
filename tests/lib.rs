@@ -7,10 +7,8 @@ use std::collections::HashMap;
 
 enum Action {
     CompareWith(f64),
-    CompareWithProcessed(f64, Box<ProcessFn>),
+    CompareWithProcessed(f64, Box<Fn(f64) -> f64>),
 }
-
-type ProcessFn = Fn(f64) -> f64;
 
 macro_rules! ok(
     ($result:expr) => ($result.unwrap());
