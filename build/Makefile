@@ -11,10 +11,16 @@ objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
 sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
+ifeq ($(shell uname),Darwin)
+suffix = dylib
+else
+suffix = so
+endif
+
 NTHREADS ?= 4
 flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
 
-$(output)/libmcpat.so: $(output)/.setup $(objects)
+$(output)/libmcpat.$(suffix): $(output)/.setup $(objects)
 	$(CXX) $(objects) -shared -o $@
 
 $(output)/%.o: $(source)/%.cc
