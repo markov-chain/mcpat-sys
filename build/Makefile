@@ -6,6 +6,9 @@ source := $(build)/source
 wrapper := $(build)/wrapper
 patches := $(build)/patches
 
+NTHREADS ?= 4
+flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
+
 sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source)/cacti/*.cc))
 objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
 
@@ -13,6 +16,7 @@ sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
 ifdef CARGO_FEATURE_CACHE
+flags += -I$(DEP_HIREDIS_ROOT)/include
 sources := $(wildcard $(wrapper)/cache/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 endif
@@ -22,9 +26,6 @@ suffix = dylib
 else
 suffix = so
 endif
-
-NTHREADS ?= 4
-flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
 
 $(output)/libmcpat.$(suffix): $(output)/.mkdir $(output)/.patch $(objects)
 	$(CXX) $(objects) -shared -o $@

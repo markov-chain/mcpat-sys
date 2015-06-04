@@ -10,7 +10,11 @@ description = "The package provides bindings to McPAT."
 build = "build.rs"
 
 [features]
-cache = []
+cache = ["hiredis-sys"]
 
 [dependencies]
 libc = "*"
+
+[dependencies.hiredis-sys]
+version = "*"
+optional = true
