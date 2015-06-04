@@ -7,7 +7,8 @@ wrapper := $(build)/wrapper
 patches := $(build)/patches
 
 NTHREADS ?= 4
-flags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
+cflags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
+lflags := -shared
 
 sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source)/cacti/*.cc))
 objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
@@ -16,7 +17,8 @@ sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 
 ifdef CARGO_FEATURE_CACHE
-flags += -I$(DEP_HIREDIS_ROOT)/include
+cflags += -I$(DEP_HIREDIS_ROOT)/include
+lflags += -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
 sources := $(wildcard $(wrapper)/cache/*.cc)
 objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
 endif
@@ -28,13 +30,13 @@ suffix = so
 endif
 
 $(output)/libmcpat.$(suffix): $(output)/.mkdir $(output)/.patch $(objects)
-	$(CXX) $(objects) -shared -o $@
+	$(CXX) $(lflags) $(objects) -o $@
 
 $(output)/%.o: $(source)/%.cc
-	$(CXX) $(flags) $< -c -o $@
+	$(CXX) $(cflags) $< -c -o $@
 
 $(output)/%.0: $(wrapper)/%.cc
-	$(CXX) $(flags) $< -I$(build) -c -o $@
+	$(CXX) $(cflags) $< -I$(build) -c -o $@
 
 $(output)/.mkdir:
 	mkdir $(output)/cacti
