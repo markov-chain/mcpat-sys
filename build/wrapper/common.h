@@ -1,5 +1,5 @@
-#ifndef __COMMON_H__
-#define __COMMON_H__
+#ifndef ___COMMON_H___
+#define ___COMMON_H___
 
 #define TO(type, some) (reinterpret_cast<type *>(some))
 

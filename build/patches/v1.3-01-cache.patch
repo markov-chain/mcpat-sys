@@ -1,0 +1,22 @@
+diff --git a/array.cc b/array.cc
+index 85e617b..b4930eb 100644
+--- a/array.cc
++++ b/array.cc
+@@ -62,11 +62,17 @@ ArrayST::ArrayST(const InputParameter *configure_interface,
+ 
+ }
+ 
++extern bool cache_get(InputParameter *, uca_org_t *, void **);
++extern void cache_set(InputParameter *, uca_org_t *, void **);
+ 
+ void ArrayST::compute_base_power()
+     {
+ 	//l_ip.out_w               =l_ip.line_sz*8;
++    void *cache;
++    if (!cache_get(&l_ip, &local_result, &cache)) {
+     local_result=cacti_interface(&l_ip);
++    cache_set(&l_ip, &local_result, &cache);
++    }
+ 	assert(local_result.cycle_time>0);
+ 	assert(local_result.access_time>0);
+ //    if (name == "Int FrontRAT")

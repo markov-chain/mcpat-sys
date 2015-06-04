@@ -9,5 +9,8 @@ documentation = "https://stainless-steel.github.io/mcpat-sys"
 description = "The package provides bindings to McPAT."
 build = "build.rs"
 
+[features]
+cache = []
+
 [dependencies]
 libc = "*"
