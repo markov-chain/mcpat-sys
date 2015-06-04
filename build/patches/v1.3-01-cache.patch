@@ -1,22 +1,63 @@
 diff --git a/array.cc b/array.cc
-index 85e617b..b4930eb 100644
+index 85e617b..0cc9ffa 100644
 --- a/array.cc
 +++ b/array.cc
-@@ -62,11 +62,17 @@ ArrayST::ArrayST(const InputParameter *configure_interface,
+@@ -38,6 +38,7 @@
+ #include <math.h>
+ #include <assert.h>
+ #include "globalvar.h"
++#include <wrapper/cache/interface.h>
  
- }
+ using namespace std;
  
-+extern bool cache_get(InputParameter *, uca_org_t *, void **);
-+extern void cache_set(InputParameter *, uca_org_t *, void **);
- 
+@@ -66,7 +67,12 @@ ArrayST::ArrayST(const InputParameter *configure_interface,
  void ArrayST::compute_base_power()
      {
  	//l_ip.out_w               =l_ip.line_sz*8;
-+    void *cache;
-+    if (!cache_get(&l_ip, &local_result, &cache)) {
++    cache_key_t key;
++    cache_key(&key, &l_ip);
++    if (!cache_get(&key, &local_result)) {
      local_result=cacti_interface(&l_ip);
-+    cache_set(&l_ip, &local_result, &cache);
++    cache_set(&key, &local_result);
 +    }
  	assert(local_result.cycle_time>0);
  	assert(local_result.access_time>0);
  //    if (name == "Int FrontRAT")
+diff --git a/cacti/cacti_interface.cc b/cacti/cacti_interface.cc
+index a337c8a..fae6caf 100644
+--- a/cacti/cacti_interface.cc
++++ b/cacti/cacti_interface.cc
+@@ -163,6 +163,7 @@ uca_org_t :: uca_org_t()
+  data_array2(0),
+  uca_pg_reference(0)
+ {
++	memset((void *)this, 0, sizeof(uca_org_t));
+ 	uca_q = vector<uca_org_t * >(0);
+ }
+ 
+diff --git a/cacti/cacti_interface.h b/cacti/cacti_interface.h
+index b2b8c4c..c125625 100644
+--- a/cacti/cacti_interface.h
++++ b/cacti/cacti_interface.h
+@@ -578,6 +578,7 @@ uca_org_t cacti_interface(
+ class mem_array
+ {
+   public:
++  mem_array() { memset((void *)this, 0, sizeof(mem_array)); }
+   int    Ndcm;
+   int    Ndwl;
+   int    Ndbl;
+diff --git a/cacti/io.cc b/cacti/io.cc
+index cb40e82..75e3d6b 100644
+--- a/cacti/io.cc
++++ b/cacti/io.cc
+@@ -61,6 +61,9 @@ InputParameter::InputParameter()
+  cl_vertical (true),
+  long_channel_device(false)
+ {
++	memset((void *)this, 0, sizeof(InputParameter));
++	perfloss = 0.01;
++	cl_vertical = true;
+ 	dvs_voltage = std::vector<double>(0);
+ }
+ 

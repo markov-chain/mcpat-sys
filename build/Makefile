@@ -7,7 +7,8 @@ wrapper := $(build)/wrapper
 patches := $(build)/patches
 
 NTHREADS ?= 4
-cflags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS) -I$(source) -I$(source)/cacti
+cflags := -fPIC -O3 -w -msse2 -mfpmath=sse -DNTHREADS=$(NTHREADS)
+cflags += -I$(source) -I$(source)/cacti -I$(build)
 lflags := -shared
 
 sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source)/cacti/*.cc))
@@ -36,7 +37,7 @@ $(output)/%.o: $(source)/%.cc
 	$(CXX) $(cflags) $< -c -o $@
 
 $(output)/%.0: $(wrapper)/%.cc
-	$(CXX) $(cflags) $< -I$(build) -c -o $@
+	$(CXX) $(cflags) $< -c -o $@
 
 $(output)/.mkdir:
 	mkdir $(output)/cacti
