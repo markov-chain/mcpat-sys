@@ -18,17 +18,17 @@
 
 struct {
 	bool initialized;
-	bool available;
+	bool active;
 	char host[1024];
 	int port;
 	redisContext *redis;
 } cache_state = {
 	.initialized = false,
-	.available = false
+	.active = false
 };
 
 static void cache_initialize(void);
-static void cache_deinitialize(void);
+static void cache_deactivate(void);
 static void cache_serialize(cache_value_t *, uca_org_t *);
 static void cache_deserialize(cache_value_t *, uca_org_t *);
 
@@ -38,14 +38,14 @@ void cache_key(cache_key_t *key, InputParameter *input) {
 		cache_state.initialized = true;
 	}
 
-	if (!cache_state.available) return;
+	if (!cache_state.active) return;
 
 	key->base = *input;
 	ZERO_FIELD(key->base.dvs_voltage);
 }
 
 bool cache_get(cache_key_t *key, uca_org_t *output) {
-	if (!cache_state.available) return false;
+	if (!cache_state.active) return false;
 
 	const int argc = 2;
 	const char *argv[argc] = {"GET", (char *)key};
@@ -56,7 +56,7 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 
 	if (!reply) {
 		PRINT_ERROR("failed to get (%s)", cache_state.redis->errstr);
-		cache_deinitialize();
+		cache_deactivate();
 		return false;
 	}
 
@@ -66,7 +66,7 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 	case REDIS_REPLY_STRING:
 		if (reply->len != sizeof(cache_value_t)) {
 			PRINT_ERROR("received data with a wrong size");
-			cache_deinitialize();
+			cache_deactivate();
 			break;
 		}
 		cache_deserialize((cache_value_t *)reply->str, output);
@@ -78,12 +78,12 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 
 	case REDIS_REPLY_ERROR:
 		PRINT_ERROR("failed to get (%s)", reply->str);
-		cache_deinitialize();
+		cache_deactivate();
 		break;
 
 	default:
 		PRINT_ERROR("received data with a wrong type");
-		cache_deinitialize();
+		cache_deactivate();
 		break;
 	}
 
@@ -92,7 +92,7 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 }
 
 void cache_set(cache_key_t *key, uca_org_t *output) {
-	if (!cache_state.available) return;
+	if (!cache_state.active) return;
 
 	cache_value_t value;
 	cache_serialize(&value, output);
@@ -106,7 +106,7 @@ void cache_set(cache_key_t *key, uca_org_t *output) {
 
 	if (!reply) {
 		PRINT_ERROR("failed to set (%s)", cache_state.redis->errstr);
-		cache_deinitialize();
+		cache_deactivate();
 		return;
 	}
 
@@ -116,12 +116,12 @@ void cache_set(cache_key_t *key, uca_org_t *output) {
 
 	case REDIS_REPLY_ERROR:
 		PRINT_ERROR("failed to set (%s)", reply->str);
-		cache_deinitialize();
+		cache_deactivate();
 		break;
 
 	default:
 		PRINT_ERROR("failed to set");
-		cache_deinitialize();
+		cache_deactivate();
 		break;
 	}
 
@@ -161,14 +161,14 @@ static void cache_initialize() {
 	}
 
 	cache_state.redis = redis;
-	cache_state.available = true;
+	cache_state.active = true;
 }
 
-static void cache_deinitialize() {
+static void cache_deactivate() {
 	if (cache_state.redis) {
 		redisFree(cache_state.redis);
 	}
-	cache_state.available = false;
+	cache_state.active = false;
 }
 
 static void cache_serialize(cache_value_t *value, uca_org_t *output) {
