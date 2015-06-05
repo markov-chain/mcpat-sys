@@ -4,6 +4,9 @@ extern crate libc;
 
 use libc::c_int;
 
+#[cfg(feature = "cache")]
+use libc::c_char;
+
 mod basic_components;
 mod cacti;
 mod core;
@@ -21,4 +24,10 @@ pub use xml_parse::*;
 
 extern "C" {
     pub fn set_opt_for_clk(value: c_int);
+}
+
+#[cfg(feature = "cache")]
+extern "C" {
+    pub fn cache_activate(host: *const c_char, port: c_int) -> c_int;
+    pub fn cache_deactivate();
 }

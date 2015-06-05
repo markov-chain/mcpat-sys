@@ -34,7 +34,7 @@ fn main() {
     let filename = c_str!("build/source/ProcessorDescriptionFiles/Xeon.xml");
 
     unsafe {
-        set_opt_for_clk(1);
+        initialize();
 
         let parsexml = new_ParseXML();
         ParseXML_parse(parsexml, filename.as_ptr() as *mut _);
@@ -44,7 +44,29 @@ fn main() {
 
         delete_Processor(processor);
         delete_ParseXML(parsexml);
+
+        deinitialize();
     }
+}
+
+#[cfg(not(feature = "cache"))]
+unsafe fn initialize() {
+    set_opt_for_clk(1);
+}
+
+#[cfg(feature = "cache")]
+unsafe fn initialize() {
+    set_opt_for_clk(1);
+    assert_eq!(cache_activate(c_str!("127.0.0.1").as_ptr(), 6379), 0);
+}
+
+#[cfg(not(feature = "cache"))]
+unsafe fn deinitialize() {
+}
+
+#[cfg(feature = "cache")]
+unsafe fn deinitialize() {
+    cache_deactivate();
 }
 
 unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut ParseXML) {
