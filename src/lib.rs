@@ -23,7 +23,7 @@ pub use sharedcache::*;
 pub use xml_parse::*;
 
 extern "C" {
-    pub fn set_opt_for_clk(value: c_int);
+    pub fn opt_for_clk_set(value: c_int);
 }
 
 #[cfg(feature = "cache")]

@@ -1,6 +1,6 @@
 #include <source/globalvar.h>
 #include <wrapper/common.h>
 
-void set_opt_for_clk(int value) {
+void opt_for_clk_set(int value) {
 	opt_for_clk = (bool)value;
 }

@@ -51,12 +51,12 @@ fn main() {
 
 #[cfg(not(feature = "cache"))]
 unsafe fn initialize() {
-    set_opt_for_clk(1);
+    opt_for_clk_set(1);
 }
 
 #[cfg(feature = "cache")]
 unsafe fn initialize() {
-    set_opt_for_clk(1);
+    opt_for_clk_set(1);
     assert_eq!(cache_activate(c_str!("127.0.0.1").as_ptr(), 6379), 0);
 }
 

@@ -4,7 +4,7 @@
 #define TO(type, some) (reinterpret_cast<type *>(some))
 
 extern "C" {
-	void set_opt_for_clk(int);
+	void opt_for_clk_set(int);
 }
 
 #endif
