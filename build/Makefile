@@ -12,13 +12,13 @@ sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source
 objects := $(patsubst %.cc,%.o,$(sources))
 
 sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
-objects += $(patsubst %.cc,%.0,$(sources))
+objects += $(patsubst %.cc,%.o,$(sources))
 
 ifdef CARGO_FEATURE_CACHE
 cflags += -I$(DEP_HIREDIS_ROOT)/include
 lflags += -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
 sources := $(wildcard $(wrapper)/cache/*.cc)
-objects += $(patsubst %.cc,%.0,$(sources))
+objects += $(patsubst %.cc,%.o,$(sources))
 endif
 
 ifeq ($(shell uname),Darwin)
@@ -33,7 +33,7 @@ $(OUT_DIR)/$(library): $(source)/$(library)
 $(source)/$(library): $(source)/.patch $(objects)
 	$(CXX) $(lflags) $(objects) -o $@
 
-%.o %.0: %.cc
+%.o: %.cc
 	$(CXX) $(cflags) $< -c -o $@
 
 $(source)/.patch:
