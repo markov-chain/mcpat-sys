@@ -1,28 +1,3 @@
-diff --git a/array.cc b/array.cc
-index 85e617b..0cc9ffa 100644
---- a/array.cc
-+++ b/array.cc
-@@ -38,6 +38,7 @@
- #include <math.h>
- #include <assert.h>
- #include "globalvar.h"
-+#include <wrapper/cache/interface.h>
- 
- using namespace std;
- 
-@@ -66,7 +67,12 @@ ArrayST::ArrayST(const InputParameter *configure_interface,
- void ArrayST::compute_base_power()
-     {
- 	//l_ip.out_w               =l_ip.line_sz*8;
-+    cache_key_t key;
-+    cache_key(&key, &l_ip);
-+    if (!cache_get(&key, &local_result)) {
-     local_result=cacti_interface(&l_ip);
-+    cache_set(&key, &local_result);
-+    }
- 	assert(local_result.cycle_time>0);
- 	assert(local_result.access_time>0);
- //    if (name == "Int FrontRAT")
 diff --git a/cacti/cacti_interface.cc b/cacti/cacti_interface.cc
 index a337c8a..fae6caf 100644
 --- a/cacti/cacti_interface.cc
@@ -48,10 +23,18 @@ index b2b8c4c..c125625 100644
    int    Ndwl;
    int    Ndbl;
 diff --git a/cacti/io.cc b/cacti/io.cc
-index cb40e82..75e3d6b 100644
+index cb40e82..9fb4543 100644
 --- a/cacti/io.cc
 +++ b/cacti/io.cc
-@@ -61,6 +61,9 @@ InputParameter::InputParameter()
+@@ -45,6 +45,7 @@
+ #include "crossbar.h"
+ #include "arbiter.h"
+ #include "version_cacti.h"
++#include <wrapper/cache/interface.h>
+ //#include "highradix.h"
+ 
+ using namespace std;
+@@ -61,6 +62,9 @@ InputParameter::InputParameter()
   cl_vertical (true),
   long_channel_device(false)
  {
@@ -61,3 +44,16 @@ index cb40e82..75e3d6b 100644
  	dvs_voltage = std::vector<double>(0);
  }
  
+@@ -3402,7 +3406,12 @@ uca_org_t cacti_interface(InputParameter  * const local_interface)
+   init_tech_params(g_ip->F_sz_um, false);
+   Wire winit; // Do not delete this line. It initializes wires.
+ 
++  cache_key_t key;
++  cache_key(&key, g_ip);
++  if (!cache_get(&key, &fin_res)) {
+   solve(&fin_res);
++  cache_set(&key, &fin_res);
++  }
+ 
+   if (!g_ip->dvs_voltage.empty())
+   {

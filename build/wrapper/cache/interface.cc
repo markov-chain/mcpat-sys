@@ -59,24 +59,35 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 		return false;
 	}
 
-	if (reply->type == REDIS_REPLY_ERROR) {
+	bool found = false;
+
+	switch (reply->type) {
+	case REDIS_REPLY_STRING:
+		if (reply->len != sizeof(cache_value_t)) {
+			printf("Cache: received data with a wrong size.\n");
+			cache_deinitialize();
+			break;
+		}
+		cache_deserialize((cache_value_t *)reply->str, output);
+		found = true;
+		break;
+
+	case REDIS_REPLY_NIL:
+		break;
+
+	case REDIS_REPLY_ERROR:
 		printf("Cache: failed to get (%s).\n", reply->str);
-		freeReplyObject((void *)reply);
 		cache_deinitialize();
-		return false;
+		break;
+
+	default:
+		printf("Cache: received data with a wrong type.\n");
+		cache_deinitialize();
+		break;
 	}
 
-	if (reply->len != sizeof(cache_value_t)) {
-		printf("Cache: received corrupted data.\n");
-		freeReplyObject((void *)reply);
-		cache_deinitialize();
-		return false;
-	}
-
-	cache_deserialize((cache_value_t *)reply->str, output);
 	freeReplyObject((void *)reply);
-
-	return true;
+	return found;
 }
 
 void cache_set(cache_key_t *key, uca_org_t *output) {
@@ -98,9 +109,19 @@ void cache_set(cache_key_t *key, uca_org_t *output) {
 		return;
 	}
 
-	if (reply->type == REDIS_REPLY_ERROR) {
+	switch (reply->type) {
+	case REDIS_REPLY_STATUS:
+		break;
+
+	case REDIS_REPLY_ERROR:
 		printf("Cache: failed to set (%s).\n", reply->str);
 		cache_deinitialize();
+		break;
+
+	default:
+		printf("Cache: failed to set.\n");
+		cache_deinitialize();
+		break;
 	}
 
 	freeReplyObject((void *)reply);
@@ -146,7 +167,7 @@ static void cache_deinitialize() {
 	if (cache_state.redis) {
 		redisFree(cache_state.redis);
 	}
-	ZERO_FIELD(cache_state);
+	cache_state.available = false;
 }
 
 static void cache_serialize(cache_value_t *value, uca_org_t *output) {
@@ -161,21 +182,29 @@ static void cache_serialize(cache_value_t *value, uca_org_t *output) {
 	if (output->tag_array2) {
 		value->tag_array2 = *output->tag_array2;
 		value->tag_array2.arr_min = NULL;
+		value->tag_array2_present = true;
 	}
 
 	if (output->data_array2) {
 		value->data_array2 = *output->data_array2;
 		value->data_array2.arr_min = NULL;
+		value->data_array2_present = true;
 	}
 }
 
 static void cache_deserialize(cache_value_t *value, uca_org_t *output) {
 	mem_array *tag_array2 = output->tag_array2;
+	if (value->tag_array2_present && !tag_array2) {
+		tag_array2 = new mem_array();
+	}
 	if (tag_array2) {
 		*tag_array2 = value->tag_array2;
 	}
 
 	mem_array *data_array2 = output->data_array2;
+	if (value->data_array2_present && !data_array2) {
+		data_array2 = new mem_array();
+	}
 	if (data_array2) {
 		*data_array2 = value->data_array2;
 	}
