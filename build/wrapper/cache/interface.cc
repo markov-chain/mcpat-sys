@@ -14,6 +14,7 @@
 #define CACHE_PORT_DEF 6379
 
 #define ZERO_FIELD(field) (memset((void *)&(field), 0, sizeof(field)))
+#define PRINT_ERROR(format, args...) (fprintf(stderr, "Cache: " format ".\n" , ##args))
 
 struct {
 	bool initialized;
@@ -54,7 +55,7 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 		cache_state.redis, argc, argv, argvlen);
 
 	if (!reply) {
-		printf("Cache: failed to get (%s).\n", cache_state.redis->errstr);
+		PRINT_ERROR("failed to get (%s)", cache_state.redis->errstr);
 		cache_deinitialize();
 		return false;
 	}
@@ -64,7 +65,7 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 	switch (reply->type) {
 	case REDIS_REPLY_STRING:
 		if (reply->len != sizeof(cache_value_t)) {
-			printf("Cache: received data with a wrong size.\n");
+			PRINT_ERROR("received data with a wrong size");
 			cache_deinitialize();
 			break;
 		}
@@ -76,12 +77,12 @@ bool cache_get(cache_key_t *key, uca_org_t *output) {
 		break;
 
 	case REDIS_REPLY_ERROR:
-		printf("Cache: failed to get (%s).\n", reply->str);
+		PRINT_ERROR("failed to get (%s)", reply->str);
 		cache_deinitialize();
 		break;
 
 	default:
-		printf("Cache: received data with a wrong type.\n");
+		PRINT_ERROR("received data with a wrong type");
 		cache_deinitialize();
 		break;
 	}
@@ -104,7 +105,7 @@ void cache_set(cache_key_t *key, uca_org_t *output) {
 		cache_state.redis, argc, argv, argvlen);
 
 	if (!reply) {
-		printf("Cache: failed to set (%s).\n", cache_state.redis->errstr);
+		PRINT_ERROR("failed to set (%s)", cache_state.redis->errstr);
 		cache_deinitialize();
 		return;
 	}
@@ -114,12 +115,12 @@ void cache_set(cache_key_t *key, uca_org_t *output) {
 		break;
 
 	case REDIS_REPLY_ERROR:
-		printf("Cache: failed to set (%s).\n", reply->str);
+		PRINT_ERROR("failed to set (%s)", reply->str);
 		cache_deinitialize();
 		break;
 
 	default:
-		printf("Cache: failed to set.\n");
+		PRINT_ERROR("failed to set");
 		cache_deinitialize();
 		break;
 	}
@@ -148,12 +149,12 @@ static void cache_initialize() {
 
 	redisContext *redis = redisConnect(cache_state.host, cache_state.port);
 	if (!redis) {
-		printf("Cache: failed to initialize.\n");
+		PRINT_ERROR("failed to initialize");
 		return;
 	}
 
 	if (redis->err) {
-		printf("Cache: failed to connect to %s:%d (%s).\n",
+		PRINT_ERROR("failed to connect to %s:%d (%s)",
 			cache_state.host, cache_state.port, redis->errstr);
 		redisFree(redis);
 		return;
