@@ -4,7 +4,7 @@ extern crate libc;
 
 use libc::c_int;
 
-#[cfg(feature = "cache")]
+#[cfg(feature = "caching")]
 use libc::c_char;
 
 mod basic_components;
@@ -26,7 +26,7 @@ extern "C" {
     pub fn opt_for_clk_set(value: c_int);
 }
 
-#[cfg(feature = "cache")]
+#[cfg(feature = "caching")]
 extern "C" {
     pub fn cache_activate(host: *const c_char, port: c_int) -> c_int;
     pub fn cache_deactivate();

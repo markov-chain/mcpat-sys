@@ -1,7 +1,7 @@
 clean-build := $(CARGO_MANIFEST_DIR)/build
 dirty-build := $(OUT_DIR)/build
-ifdef CARGO_FEATURE_CACHE
-dirty-build := $(dirty-build)-cache
+ifdef CARGO_FEATURE_CACHING
+dirty-build := $(dirty-build)-caching
 endif
 
 all: $(dirty-build)

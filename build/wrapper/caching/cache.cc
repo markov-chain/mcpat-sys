@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include <hiredis/hiredis.h>
-#include <wrapper/cache/interface.h>
+#include <wrapper/caching/cache.h>
 
 #define ZERO_FIELD(field) (memset((void *)&(field), 0, sizeof(field)))
 #define PRINT_ERROR(format, args...) (fprintf(stderr, "Cache: " format ".\n" , ##args))

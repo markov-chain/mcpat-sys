@@ -1,5 +1,5 @@
-#ifndef __WRAPPER_CACHE_INTERFACE_H__
-#define __WRAPPER_CACHE_INTERFACE_H__
+#ifndef __WRAPPER_CACHING_CACHE_H__
+#define __WRAPPER_CACHING_CACHE_H__
 
 #include <source/cacti/Ucache.h>
 #include <source/cacti/cacti_interface.h>

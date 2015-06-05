@@ -30,7 +30,7 @@ index cb40e82..9fb4543 100644
  #include "crossbar.h"
  #include "arbiter.h"
  #include "version_cacti.h"
-+#include <wrapper/cache/interface.h>
++#include <wrapper/caching/cache.h>
  //#include "highradix.h"
  
  using namespace std;

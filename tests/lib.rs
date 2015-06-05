@@ -49,22 +49,22 @@ fn main() {
     }
 }
 
-#[cfg(not(feature = "cache"))]
+#[cfg(not(feature = "caching"))]
 unsafe fn initialize() {
     opt_for_clk_set(1);
 }
 
-#[cfg(feature = "cache")]
+#[cfg(feature = "caching")]
 unsafe fn initialize() {
     opt_for_clk_set(1);
     assert_eq!(cache_activate(c_str!("127.0.0.1").as_ptr(), 6379), 0);
 }
 
-#[cfg(not(feature = "cache"))]
+#[cfg(not(feature = "caching"))]
 unsafe fn deinitialize() {
 }
 
-#[cfg(feature = "cache")]
+#[cfg(feature = "caching")]
 unsafe fn deinitialize() {
     cache_deactivate();
 }

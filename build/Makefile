@@ -14,10 +14,10 @@ objects := $(patsubst %.cc,%.o,$(sources))
 sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
 objects += $(patsubst %.cc,%.o,$(sources))
 
-ifdef CARGO_FEATURE_CACHE
+ifdef CARGO_FEATURE_CACHING
 cflags += -I$(DEP_HIREDIS_ROOT)/include
 lflags += -Wl,-rpath,$(DEP_HIREDIS_ROOT)/lib -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
-sources := $(wildcard $(wrapper)/cache/*.cc)
+sources := $(wildcard $(wrapper)/caching/*.cc)
 objects += $(patsubst %.cc,%.o,$(sources))
 endif
 
@@ -37,7 +37,7 @@ $(source)/$(library): $(objects)
 	$(CXX) $(cflags) $< -c -o $@
 
 $(source)/.patch:
-ifdef CARGO_FEATURE_CACHE
+ifdef CARGO_FEATURE_CACHING
 	(cd $(source); cat $(sort $(wildcard $(patches)/*.patch)) | patch -p1)
 endif
 	touch $@
