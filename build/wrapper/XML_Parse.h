@@ -1,5 +1,5 @@
-#ifndef ____XML_PARSE_H____
-#define ____XML_PARSE_H____
+#ifndef __WRAPPER_XML_PARSE_H__
+#define __WRAPPER_XML_PARSE_H__
 
 #include <source/XML_Parse.h>
 

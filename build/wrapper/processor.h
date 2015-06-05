@@ -1,5 +1,5 @@
-#ifndef ____PROCESSOR_H____
-#define ____PROCESSOR_H____
+#ifndef __WRAPPER_PROCESSOR_H__
+#define __WRAPPER_PROCESSOR_H__
 
 #include <wrapper/XML_Parse.h>
 #include <wrapper/cacti/cacti_interface.h>

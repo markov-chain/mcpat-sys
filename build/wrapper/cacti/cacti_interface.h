@@ -1,5 +1,5 @@
-#ifndef ____CACTI_INTERFACE_H____
-#define ____CACTI_INTERFACE_H____
+#ifndef __WRAPPER_CACTI_INTERFACE_H__
+#define __WRAPPER_CACTI_INTERFACE_H__
 
 #include <source/cacti/cacti_interface.h>
 

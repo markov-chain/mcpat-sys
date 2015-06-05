@@ -1,5 +1,5 @@
-#ifndef ____CORE_H____
-#define ____CORE_H____
+#ifndef __WRAPPER_CORE_H__
+#define __WRAPPER_CORE_H__
 
 #include <wrapper/sharedcache.h>
 

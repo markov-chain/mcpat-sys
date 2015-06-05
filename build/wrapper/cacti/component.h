@@ -1,5 +1,5 @@
-#ifndef ____COMPONENT_H____
-#define ____COMPONENT_H____
+#ifndef __WRAPPER_COMPONENT_H__
+#define __WRAPPER_COMPONENT_H__
 
 #include <wrapper/cacti/cacti_interface.h>
 

@@ -1,5 +1,5 @@
-#ifndef ___COMMON_H___
-#define ___COMMON_H___
+#ifndef __WRAPPER_COMMON_H__
+#define __WRAPPER_COMMON_H__
 
 #define TO(type, some) (reinterpret_cast<type *>(some))
 
