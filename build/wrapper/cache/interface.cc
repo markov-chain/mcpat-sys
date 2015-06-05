@@ -1,6 +1,3 @@
-// The code below is not thread safe. There is no point in pursuing thread
-// safeness here as McPAT internally is not thread safe anyway.
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,16 +13,17 @@
 #define ZERO_FIELD(field) (memset((void *)&(field), 0, sizeof(field)))
 #define PRINT_ERROR(format, args...) (fprintf(stderr, "Cache: " format ".\n" , ##args))
 
-struct {
+typedef struct cache_state_t {
 	bool initialized;
 	bool active;
 	char host[1024];
 	int port;
 	redisContext *redis;
-} cache_state = {
-	.initialized = false,
-	.active = false
-};
+} cache_state_t;
+
+// The code below is not thread safe. There is no point in pursuing thread
+// safeness here as McPAT internally is not thread safe anyway.
+static cache_state_t cache_state = {false, false, 0, 0, NULL};
 
 static void cache_initialize(void);
 static void cache_deactivate(void);
