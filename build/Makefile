@@ -16,7 +16,7 @@ objects += $(patsubst %.cc,%.o,$(sources))
 
 ifdef CARGO_FEATURE_CACHE
 cflags += -I$(DEP_HIREDIS_ROOT)/include
-lflags += -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
+lflags += -Wl,-rpath,$(DEP_HIREDIS_ROOT)/lib -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
 sources := $(wildcard $(wrapper)/cache/*.cc)
 objects += $(patsubst %.cc,%.o,$(sources))
 endif
