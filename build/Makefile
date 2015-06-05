@@ -30,10 +30,10 @@ endif
 $(OUT_DIR)/$(library): $(source)/$(library)
 	cp $< $@
 
-$(source)/$(library): $(source)/.patch $(objects)
+$(source)/$(library): $(objects)
 	$(CXX) $(lflags) $(objects) -o $@
 
-%.o: %.cc
+%.o: %.cc | $(source)/.patch
 	$(CXX) $(cflags) $< -c -o $@
 
 $(source)/.patch:
