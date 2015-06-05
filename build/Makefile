@@ -1,7 +1,4 @@
-root := $(CARGO_MANIFEST_DIR)
-output := $(OUT_DIR)
-
-build := $(root)/build
+build := $(shell pwd)
 source := $(build)/source
 wrapper := $(build)/wrapper
 patches := $(build)/patches
@@ -12,42 +9,37 @@ cflags += -I$(source) -I$(source)/cacti -I$(build)
 lflags := -shared
 
 sources := $(filter-out %/main.cc,$(wildcard $(source)/*.cc) $(wildcard $(source)/cacti/*.cc))
-objects := $(patsubst $(source)/%.cc,$(output)/%.o,$(sources))
+objects := $(patsubst %.cc,%.o,$(sources))
 
 sources := $(wildcard $(wrapper)/*.cc) $(wildcard $(wrapper)/cacti/*.cc)
-objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
+objects += $(patsubst %.cc,%.0,$(sources))
 
 ifdef CARGO_FEATURE_CACHE
 cflags += -I$(DEP_HIREDIS_ROOT)/include
 lflags += -L$(DEP_HIREDIS_ROOT)/lib -lhiredis
 sources := $(wildcard $(wrapper)/cache/*.cc)
-objects += $(patsubst $(wrapper)/%.cc,$(output)/%.0,$(sources))
+objects += $(patsubst %.cc,%.0,$(sources))
 endif
 
 ifeq ($(shell uname),Darwin)
-suffix = dylib
+library = libmcpat.dylib
 else
-suffix = so
+library = libmcpat.so
 endif
 
-$(output)/libmcpat.$(suffix): $(output)/.mkdir $(output)/.patch $(objects)
+$(OUT_DIR)/$(library): $(source)/$(library)
+	cp $< $@
+
+$(source)/$(library): $(source)/.patch $(objects)
 	$(CXX) $(lflags) $(objects) -o $@
 
-$(output)/%.o: $(source)/%.cc
+%.o %.0: %.cc
 	$(CXX) $(cflags) $< -c -o $@
 
-$(output)/%.0: $(wrapper)/%.cc
-	$(CXX) $(cflags) $< -c -o $@
-
-$(output)/.mkdir:
-	mkdir $(output)/cacti
-ifdef CARGO_FEATURE_CACHE
-	mkdir $(output)/cache
-endif
-	touch $@
-
-$(output)/.patch:
+$(source)/.patch:
 ifdef CARGO_FEATURE_CACHE
 	(cd $(source); cat $(sort $(wildcard $(patches)/*.patch)) | patch -p1)
 endif
 	touch $@
+
+.PHONY: $(OUT_DIR)/$(library)

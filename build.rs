@@ -21,7 +21,8 @@ fn main() {
     let build = PathBuf::from(&get!("CARGO_MANIFEST_DIR")).join("build");
     let output = PathBuf::from(&get!("OUT_DIR"));
 
-    run!(cmd!("make").arg(&format!("-j{}", get!("NUM_JOBS")))
+    run!(cmd!("make").arg("-f").arg("build.mk")
+                     .arg(&format!("-j{}", get!("NUM_JOBS")))
                      .current_dir(&build));
 
     println!("cargo:rustc-link-lib=dylib=mcpat");
