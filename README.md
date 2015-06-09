@@ -14,6 +14,6 @@ The package provides bindings to [McPAT][1].
 
 [version-img]: https://img.shields.io/crates/v/mcpat-sys.svg
 [version-url]: https://crates.io/crates/mcpat-sys
-[status-img]: https://travis-ci.org/stainless-steel/mcpat-sys.svg?branch=master
-[status-url]: https://travis-ci.org/stainless-steel/mcpat-sys
-[doc]: https://stainless-steel.github.io/mcpat-sys
+[status-img]: https://travis-ci.org/simulated-reality/mcpat-sys.svg?branch=master
+[status-url]: https://travis-ci.org/simulated-reality/mcpat-sys
+[doc]: https://simulated-reality.github.io/mcpat-sys
