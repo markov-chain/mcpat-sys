@@ -1,6 +1,5 @@
 #include <source/XML_Parse.h>
 #include <source/processor.h>
-#include <wrapper/cacti/cacti_interface.h>
 #include <wrapper/cacti/component.h>
 #include <wrapper/common.h>
 #include <wrapper/core.h>
@@ -13,14 +12,6 @@ Processor_t *new_Processor(ParseXML_t *XML_interface) {
 
 void delete_Processor(Processor_t *self) {
 	delete TO(Processor, self);
-}
-
-powerDef_t *Processor_power(Processor_t *self) {
-	return TO(powerDef_t, &TO(Processor, self)->power);
-}
-
-powerDef_t *Processor_rt_power(Processor_t *self) {
-	return TO(powerDef_t, &TO(Processor, self)->rt_power);
 }
 
 Core_t *Processor_cores(Processor_t *self, int i) {

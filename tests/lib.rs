@@ -74,7 +74,8 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
 
     let system = &*ParseXML_sys(parsexml);
 
-    check(system, powerDef_readOp(Processor_power(processor)), hash_map!(
+    check(system, processor as *mut _, hash_map!(
+        "Area" => CompareWith(410.507),
         "Peak Power" => CompareWith(134.938),
         "Total Leakage" => CompareWith(36.8319),
         "Peak Dynamic" => CompareWith(98.1063),
@@ -83,7 +84,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
         "Gate Leakage" => CompareWith(1.66871),
     ));
 
-    check(system, powerDef_readOp(Processor_rt_power(processor)), hash_map!(
+    check_runtime(system, processor as *mut _, hash_map!(
         "Runtime Dynamic" => CompareWith(72.9199),
     ));
 
@@ -99,7 +100,8 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     let core = Processor_cores(processor, 0);
 
     let clockRate = Core_clockRate(core);
-    check(system, powerDef_readOp(Core_power(core)), hash_map!(
+    check(system, core as *mut _, hash_map!(
+        "Area" => CompareWith(55.8565),
         "Peak Dynamic" => CompareWithProcessed(39.2989, Box::new(move |v| v * clockRate)),
         "Subthreshold Leakage" => CompareWith(12.0565),
         "Subthreshold Leakage with power gating" => CompareWith(5.15028),
@@ -107,7 +109,7 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     ));
 
     let executionTime = Core_executionTime(core);
-    check(system, powerDef_readOp(Core_rt_power(core)), hash_map!(
+    check_runtime(system, core as *mut _, hash_map!(
         "Runtime Dynamic" => CompareWithProcessed(55.7891, Box::new(move |v| v / executionTime)),
     ));
 
@@ -115,7 +117,8 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     let l2cache = Core_l2cache(core);
 
     let clockRate = CacheDynParam_clockRate(SharedCache_cachep(l2cache));
-    check(system, powerDef_readOp(SharedCache_power(l2cache)), hash_map!(
+    check(system, l2cache as *mut _, hash_map!(
+        "Area" => CompareWith(16.0033),
         "Peak Dynamic" => CompareWithProcessed(3.16559, Box::new(move |v| v * clockRate)),
         "Subthreshold Leakage" => CompareWith(2.73387),
         "Subthreshold Leakage with power gating" => CompareWith(1.3859),
@@ -123,30 +126,35 @@ unsafe fn Processor_displayEnergy(processor: *mut Processor, parsexml: *mut Pars
     ));
 
     let executionTime = CacheDynParam_executionTime(SharedCache_cachep(l2cache));
-    check(system, powerDef_readOp(SharedCache_rt_power(l2cache)), hash_map!(
+    check_runtime(system, l2cache as *mut _, hash_map!(
         "Runtime Dynamic" => CompareWithProcessed(7.23071, Box::new(move |v| v / executionTime)),
     ));
 
     let l3 = Processor_l3(processor);
 
-    check(system, powerDef_readOp(Component_power(l3)), hash_map!(
+    check(system, l3, hash_map!(
+        "Area" => CompareWith(293.281),
         "Peak Dynamic" => CompareWith(6.70159),
         "Subthreshold Leakage" => CompareWith(10.9824),
         "Subthreshold Leakage with power gating" => CompareWith(6.06659),
         "Gate Leakage" => CompareWith(0.165767),
     ));
 
-    check(system, powerDef_readOp(Component_rt_power(l3)), hash_map!(
+    check_runtime(system, l3, hash_map!(
         "Runtime Dynamic" => CompareWith(4.32382),
     ));
 }
 
-unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap<&str, Action>) {
+unsafe fn check(system: &root_system, component: *mut Component, map: HashMap<&str, Action>) {
     use Action::*;
 
     let long_channel = system.longer_channel_device != 0;
     let power_gating = system.power_gating != 0;
 
+    let area = Component_area(component);
+    let readOp = powerDef_readOp(Component_power(component));
+
+    let area = Area_get_area(area) * 1e-6;
     let dynamic = powerComponents_dynamic(readOp);
     let leakage = powerComponents_leakage(readOp);
     let gate_leakage = powerComponents_gate_leakage(readOp);
@@ -159,6 +167,7 @@ unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap
 
     for (key, action) in map {
         let actual = match key {
+            "Area" => area,
             "Peak Power" => dynamic + total_leakage,
             "Total Leakage" => total_leakage,
             "Peak Dynamic" => dynamic,
@@ -172,6 +181,24 @@ unsafe fn check(system: &root_system, readOp: *mut powerComponents, map: HashMap
                 }
             },
             "Gate Leakage" => gate_leakage,
+            _ => panic!("encountered an unknown quantity"),
+        };
+        match action {
+            CompareWith(expected) => equal(actual, expected),
+            CompareWithProcessed(expected, process) => equal(process(actual), expected),
+        }
+    }
+}
+
+unsafe fn check_runtime(_: &root_system, component: *mut Component, map: HashMap<&str, Action>) {
+    use Action::*;
+
+    let readOp = powerDef_readOp(Component_rt_power(component));
+
+    let dynamic = powerComponents_dynamic(readOp);
+
+    for (key, action) in map {
+        let actual = match key {
             "Runtime Dynamic" => dynamic,
             _ => panic!("encountered an unknown quantity"),
         };

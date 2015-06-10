@@ -15,6 +15,7 @@ mod sharedcache;
 mod xml_parse;
 
 pub use basic_components::*;
+pub use cacti::area::*;
 pub use cacti::cacti_interface::*;
 pub use cacti::component::*;
 pub use core::*;
