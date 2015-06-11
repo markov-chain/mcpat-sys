@@ -5,6 +5,8 @@
 
 extern "C" {
 	typedef struct Area_t;
+	double Area_get_w(Area_t *);
+	double Area_get_h(Area_t *);
 	double Area_get_area(Area_t *);
 }
 
