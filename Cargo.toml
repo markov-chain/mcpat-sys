@@ -3,9 +3,9 @@ name = "mcpat-sys"
 version = "0.7.0"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
 license = "MIT"
-repository = "https://github.com/simulated-reality/mcpat-sys"
-homepage = "https://github.com/simulated-reality/mcpat-sys"
-documentation = "https://simulated-reality.github.io/mcpat-sys"
+repository = "https://github.com/markov-chain/mcpat-sys"
+homepage = "https://github.com/markov-chain/mcpat-sys"
+documentation = "https://markov-chain.github.io/mcpat-sys"
 description = "The package provides bindings to McPAT."
 build = "build.rs"
 
