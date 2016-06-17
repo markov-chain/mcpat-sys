@@ -1,4 +1,4 @@
-#![allow(non_snake_case)]
+#![allow(improper_ctypes, non_snake_case)]
 
 extern crate libc;
 

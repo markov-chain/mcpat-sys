@@ -1,20 +1,21 @@
 [package]
 name = "mcpat-sys"
-version = "0.7.1"
+version = "0.8.0"
+license = "Apache-2.0/MIT"
 authors = ["Ivan Ukhov <ivan.ukhov@gmail.com>"]
-license = "MIT"
-repository = "https://github.com/markov-chain/mcpat-sys"
-homepage = "https://github.com/markov-chain/mcpat-sys"
-documentation = "https://markov-chain.github.io/mcpat-sys"
 description = "The package provides bindings to McPAT."
+documentation = "https://markov-chain.github.io/mcpat-sys"
+homepage = "https://github.com/markov-chain/mcpat-sys"
+repository = "https://github.com/markov-chain/mcpat-sys"
 build = "build.rs"
+links = "mcpat"
 
 [features]
 caching = ["hiredis-sys"]
 
 [dependencies]
-libc = "*"
+libc = "0.2"
 
 [dependencies.hiredis-sys]
-version = "*"
+version = "0.4"
 optional = true
